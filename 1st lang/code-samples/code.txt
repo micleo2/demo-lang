@@ -1,0 +1,6 @@
+push 30
+dec
+dup
+writp
+goine 2, 0
+stop

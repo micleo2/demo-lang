@@ -1,0 +1,141 @@
+module SimpToy
+  grammar MyGrammar
+    rule statement
+      psh_stmt / pop_stmt / stop / wrt_stmt / goto / goie / inc / dec / pstck / goine / dup / sub / comparison
+    end
+
+    rule stop
+      'stop' {
+        def execute env=nil
+          env.should_stop = true
+        end
+      }
+    end
+
+    rule wrt_stmt
+      'writp' {
+        def execute env=nil
+          puts env.data.last
+          env.data = env.data[0..-2]
+        end
+      }
+    end
+
+    rule psh_stmt
+      'push ' number {
+        def execute env=nil
+          env.data << number.eval
+        end
+      }
+    end
+
+    rule pop_stmt
+      'pop' {
+        def execute(env)
+          env.data = env.data[0..-2]
+        end
+      }
+    end
+
+    rule dup
+      'dup' {
+        def execute env
+          env.data << env.data.last
+        end
+      }
+    end
+
+    rule inc
+      'inc' {
+        def execute env
+          env.data[-1] += 1
+        end
+      }
+    end
+
+    rule dec
+      'dec' {
+        def execute env
+          env.data[-1] -= 1
+        end
+      }
+    end
+
+    rule sub
+      'sub ' number {
+        def execute env
+          env.data[-1] -= number.eval
+        end
+      }
+    end
+
+    rule comparison
+      lt / cmp
+    end
+
+    rule cmp
+      'cmp ' number {
+        def execute env
+          p = env.data.last
+          env.data << (p <=> number.eval)
+        end
+      }
+    end
+
+    rule lt
+      'lt ' number {
+        def execute env
+
+        end
+      }
+    end
+
+    rule goto
+      'goto ' number {
+        def execute env
+          env.pc = number.eval - 1
+        end
+      }
+    end
+
+    rule goie
+      'goie ' number comma number {
+        def execute env
+          env.pc = (number1.eval-1) if env.data.last == number2.eval
+        end
+      }
+    end
+
+    rule goine
+      'goine ' number comma number {
+        def execute env
+          env.pc = (number1.eval-1) if env.data.last != number2.eval
+        end
+      }
+    end
+
+    rule pstck
+      'pstck' {
+        def execute env
+          puts "The stack is #{env.data}"
+        end
+      }
+    end
+
+    rule bexpr
+      'true' / zero
+    end
+
+    rule comma
+      (' ')* ',' (' ')*
+    end
+
+    rule number
+      ('-'? [1-9] [0-9]* / '0') {
+        def eval(env={})
+          text_value.to_i
+        end
+      }
+    end
+  end
+end

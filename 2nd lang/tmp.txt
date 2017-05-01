@@ -1,0 +1,13 @@
+grammar MyGrammar
+  rule statement
+    psh_stmt / pop_stmt
+  end
+
+  rule psh_stmt
+    'push 3'
+  end
+
+  rule pop_stmt
+    'pop'
+  end
+end

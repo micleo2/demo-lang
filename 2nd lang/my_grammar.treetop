@@ -1,0 +1,87 @@
+module SimpToy
+  grammar MyGrammar
+    rule statement
+      stop / wrt_stmt / gotos / make_var / assign_var / phash
+    end
+
+    rule phash
+      'phash' {
+        def execute env
+          puts env.vars.to_s
+        end
+      }
+    end
+
+    rule make_var
+      'make ' assign_var {
+        def execute env
+          assign_var.execute env
+        end
+      }
+    end
+
+    rule assign_var
+      identifier space '=' space number {
+        def execute env
+          env.vars[identifier.eval] = number.eval
+        end
+      }
+    end
+
+    rule gotos
+       goto / goie / goine
+    end
+
+    rule stop
+      'stop' {
+        def execute env=nil
+          env.should_stop = true
+        end
+      }
+    end
+
+    rule wrt_stmt
+      'write ' identifier {
+        def execute env
+          puts env.vars[identifier.eval]
+        end
+      }
+    end
+
+    rule goto
+      'goto ' number {
+        def execute env
+          env.pc = number.eval - 1
+        end
+      }
+    end
+
+    rule goif
+
+    end
+
+    rule identifier
+      [a-zA-Z]+ {
+        def eval
+          self.text_value
+        end
+      }
+    end
+
+    rule space
+      (' ')+
+    end
+
+    rule comma
+      (' ')* ',' (' ')*
+    end
+
+    rule number
+      ('-'? [1-9] [0-9]* / '0') {
+        def eval(env={})
+          text_value.to_i
+        end
+      }
+    end
+  end
+end
